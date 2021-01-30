@@ -17,6 +17,7 @@
 		8A77A24825849FE800A0B40D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A77A24725849FE800A0B40D /* AVFoundation.framework */; };
 		8A77A2622588465900A0B40D /* ViewControllerEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A77A2612588465900A0B40D /* ViewControllerEx.swift */; };
 		8A77A2732588501E00A0B40D /* dispImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A77A2722588501E00A0B40D /* dispImageView.swift */; };
+		8A88E2EA25A54DDF00AC65B9 /* AVCaptureVideoOrientationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A88E2E925A54DDF00AC65B9 /* AVCaptureVideoOrientationExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		8A77A24725849FE800A0B40D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8A77A2612588465900A0B40D /* ViewControllerEx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerEx.swift; sourceTree = "<group>"; };
 		8A77A2722588501E00A0B40D /* dispImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dispImageView.swift; sourceTree = "<group>"; };
+		8A88E2E925A54DDF00AC65B9 /* AVCaptureVideoOrientationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVCaptureVideoOrientationExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 		8A77A20F2584982E00A0B40D /* avFoundation */ = {
 			isa = PBXGroup;
 			children = (
+				8A88E2E825A54DD300AC65B9 /* extension */,
 				8A77A2102584982E00A0B40D /* AppDelegate.swift */,
 				8A77A2122584982E00A0B40D /* SceneDelegate.swift */,
 				8A77A2142584982E00A0B40D /* ViewController.swift */,
@@ -141,6 +144,14 @@
 				8A77A24725849FE800A0B40D /* AVFoundation.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8A88E2E825A54DD300AC65B9 /* extension */ = {
+			isa = PBXGroup;
+			children = (
+				8A88E2E925A54DDF00AC65B9 /* AVCaptureVideoOrientationExtension.swift */,
+			);
+			path = extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A77A2152584982E00A0B40D /* ViewController.swift in Sources */,
+				8A88E2EA25A54DDF00AC65B9 /* AVCaptureVideoOrientationExtension.swift in Sources */,
 				8A77A2622588465900A0B40D /* ViewControllerEx.swift in Sources */,
 				8A77A2112584982E00A0B40D /* AppDelegate.swift in Sources */,
 				8A77A2132584982E00A0B40D /* SceneDelegate.swift in Sources */,

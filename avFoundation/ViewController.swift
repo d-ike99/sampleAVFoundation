@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     // クラス部品
     private var currentFrame: CGImage!
     private var dispFrame: dispImageView!
+    private var testView: UIImageView!
     
     // AVFoundationに関する部品
     var captureSession: AVCaptureSession! = nil
@@ -40,12 +41,20 @@ class ViewController: UIViewController {
         
         // init
         self.dispFrame = dispImageView()
-        dispFrame.frame = CGRect(x: 20, y: 20, width: self.view.frame.width - 40, height: self.view.frame.height - 40)
+        dispFrame.frame = CGRect(x: 0, y: 0, width: 375, height: 550)
         dispFrame.isUserInteractionEnabled = true
+        
+        self.testView = UIImageView()
+        testView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 550)
         
         self.view.backgroundColor = .white
         self.view.addSubview(dispFrame)
         self.view.isUserInteractionEnabled = true
+        self.view.addSubview(testView)
+        self.view.backgroundColor = .white
+        
+        print("dispWidth: ", self.view.frame.width as Any)
+        print("dispHeight: ", self.view.frame.height as Any)
         
         // セッションの初期化
         self.setUpSession() { error in
@@ -54,46 +63,36 @@ class ViewController: UIViewController {
                 return
             }
             // 動画撮影開始
-            // 録音ボタン押下可能設定
             self.startCapturing()
         }
     }
 
     // 初期化
-    public func setUpSession(completion: @escaping (Error?) -> Void) {
-        sessionQueue.async {
-            do {
-                // インプット、アウトプットの設定
-                try self.initalizeAVFoundation()
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(error)
-                }
+    private func setUpSession(completion: @escaping (Error?) -> Void) {
+        do {
+            // インプット、アウトプットの設定
+            try self.initalizeAVFoundation()
+            completion(nil)
+            
+        } catch {
+            DispatchQueue.main.async {
+                completion(error)
             }
         }
     }
-    // 録音ボタン押下処理
-    @objc func RecordTapped(_ sender: UITapGestureRecognizer) {
-        self.startCapturing()
-    }
     
-    public func startCapturing(completion completionHandler: (() -> Void)? = nil) {
-        sessionQueue.async {
-            if !self.captureSession.isRunning {
-                // Invoke the startRunning method of the captureSession to start the
-                // flow of data from the inputs to the outputs.
-                self.captureSession.startRunning()
-            }
-            
-            print("captureStart")
-            
-            if let completionHandler = completionHandler {
-                DispatchQueue.main.async {
-                    completionHandler()
-                }
+    private func startCapturing(completion completionHandler: (() -> Void)? = nil) {
+        if !self.captureSession.isRunning {
+            // Invoke the startRunning method of the captureSession to start the
+            // flow of data from the inputs to the outputs.
+            self.captureSession.startRunning()
+        }
+        
+        print("captureStart")
+        
+        if let completionHandler = completionHandler {
+            DispatchQueue.main.async {
+                completionHandler()
             }
         }
     }
@@ -111,7 +110,9 @@ extension ViewController {
         }
         
         self.captureSession.beginConfiguration()
-        self.captureSession.sessionPreset = .vga640x480
+        //self.captureSession.sessionPreset = .vga640x480
+        self.captureSession.sessionPreset = .hd1280x720
+        //self.captureSession.sessionPreset = .hd1920x1080
         
         // AVCaptureInputの定義
         try setCaptureSessionInput()
@@ -160,7 +161,11 @@ extension ViewController {
         self.videoOutput.alwaysDiscardsLateVideoFrames = true
         //self.videoOutput.recommendedVideoSettings(forVideoCodecType: AVVideoCodecType.h264, assetWriterOutputFileType: AVFileType.mp4)
         //videoOutput.sampleBufferDelegate = self
-        videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
+        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue.main)
+        
+        print("sampleBufferDelegate", videoOutput.sampleBufferDelegate as Any)
+        print("sampleBufferCallbackQueue", videoOutput.sampleBufferCallbackQueue as Any)
+        print("availablezvideoCodecTypes: ", videoOutput.availableVideoCodecTypes as Any)
         
         guard captureSession.canAddOutput(videoOutput) else {
             throw VideoCaptureError.invalidOutput
@@ -168,12 +173,10 @@ extension ViewController {
         captureSession.addOutput(self.videoOutput)
         
         // 動画の向き（orientation）の設定
-        if let connection = videoOutput.connection(with: .video), connection.isVideoOrientationSupported {
-            print("test")
-            
-            connection.videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        if let connection: AVCaptureConnection = videoOutput.connection(with: .video), connection.isVideoOrientationSupported {
+            connection.videoOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation)
             connection.isVideoMirrored = true
-
+            
             // Inverse the landscape orientation to force the image in the upward
             // orientation.
             if connection.videoOrientation == .landscapeLeft {
@@ -211,16 +214,20 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         // CoreVideo
         CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
         
-        DispatchQueue.main.sync {
+        sessionQueue.sync {
             self.dispFrame(didCaptureFrame: image)
         }
     }
+    // フレーム表示処理
     private func dispFrame(didCaptureFrame capturedImage: CGImage?){
         // 生成画像の反映
         guard currentFrame == nil else {
             return
         }
-        dispFrame.show(on: capturedImage!)
+        
+        // 以下どちらの方法でも表示可能
+        self.testView.image = UIImage(cgImage: capturedImage!)
+        //dispFrame.show(on: capturedImage!)
     }
 }
  
